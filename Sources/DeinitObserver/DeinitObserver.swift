@@ -1,16 +1,30 @@
 import Foundation
 
-final class DeinitObserver {
+public final class DeinitObserver {
     
-    typealias DidDeinit = () -> Void
+    public typealias DidDeinit = () -> Void
     
     private let didDeinit: DidDeinit
     
-    init(didDeinit: @escaping DidDeinit) {
+    public init(didDeinit: @escaping DidDeinit) {
         self.didDeinit = didDeinit
     }
     
     deinit {
         didDeinit()
     }
+    
+    public func observe(_ object: AnyObject) {
+        objc_setAssociatedObject(
+            object,
+            key(of: object),
+            self,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+    }
+    
+    private func key(of object: AnyObject) -> String {
+        String(describing: Unmanaged<AnyObject>.passUnretained(object).toOpaque())
+    }
+    
 }
