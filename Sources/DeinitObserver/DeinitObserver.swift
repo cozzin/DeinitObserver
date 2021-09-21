@@ -1,12 +1,15 @@
 import Foundation
 
-public final class DeinitObserver {
+public final class DeinitObserver<Target> where Target: AnyObject {
     
     public typealias DidDeinit = () -> Void
     
-    private let didDeinit: DidDeinit
+    private weak var target: Target?
     
-    public init(didDeinit: @escaping DidDeinit) {
+    private let didDeinit: DidDeinit
+        
+    public init(for target: Target, didDeinit: @escaping DidDeinit) {
+        self.target = target
         self.didDeinit = didDeinit
     }
     
@@ -14,16 +17,20 @@ public final class DeinitObserver {
         didDeinit()
     }
     
-    public func observe(_ object: AnyObject) {
+    public func observe() {
+        guard let target = target else {
+            return
+        }
+        
         objc_setAssociatedObject(
-            object,
-            key(of: object),
+            target,
+            key(of: target),
             self,
             .OBJC_ASSOCIATION_RETAIN_NONATOMIC
         )
     }
     
-    private func key(of object: AnyObject) -> String {
+    private func key(of object: Target) -> String {
         String(describing: Unmanaged<AnyObject>.passUnretained(object).toOpaque())
     }
     

@@ -15,9 +15,9 @@ final class DeinitObserverTests: XCTestCase {
 
     func test_givenObjectDeinit() {
         // given
-        DeinitObserver { [weak self] in
+        DeinitObserver(for: givenObject) { [weak self] in
             self?.didDeinit = true
-        }.observe(givenObject)
+        }.observe()
         
         // when
         givenObject = nil
@@ -28,9 +28,9 @@ final class DeinitObserverTests: XCTestCase {
     
     func test_givenObjectDidNotDeinit() {
         // given
-        DeinitObserver { [weak self] in
+        DeinitObserver(for: givenObject) { [weak self] in
             self?.didDeinit = true
-        }.observe(givenObject)
+        }.observe()
         
         // then
         XCTAssertFalse(didDeinit)
