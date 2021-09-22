@@ -14,7 +14,7 @@ Observe object's deinit from outside of object
 ```swift
 import DeinitObserver
 
-DeinitObserver(for: target) { [weak self] in
-    print("did deinit!")
+DeinitObserver(for: target) {
+    print("target did deinit!")
 }.observe()
 ```
